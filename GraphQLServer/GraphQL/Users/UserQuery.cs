@@ -6,11 +6,14 @@ namespace GraphQLServer.GraphQL.Users;
 [ExtendObjectType(typeof(Query))]  
 public class UserQuery  
 {  
-    public IEnumerable<User> GetUsers()  
-    {  
-        return new List<User> {  
-            new User { Id = 1, Name = "A", Desc = "THE USER A" },  
-            new User { Id = 2, Name = "B", Desc = "THE USER B" }  
-        };  
-    }  
+    public async Task<IEnumerable<User>> GetUsers([Service] UserRepository userRepository)
+    {
+        return await userRepository.GetUsersAsync();
+    }
+
+    [GraphQLName("userByName")]
+    public async Task<User?> GetUserByName(string name, [Service] UserRepository userRepository)
+    {
+        return await userRepository.GetUserByNameAsync(name);
+    }
 }  

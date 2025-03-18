@@ -1,13 +1,25 @@
-using GraphQLServer.GraphQL.Common;  
-  
-namespace GraphQLServer.GraphQL.Users;  
-  
-[ExtendObjectType(typeof(Mutation))]  
-public class UserMutations  
-{  
-    public bool AddUser(string name, string desc)  
-    {  
-        // 실제 구현은 DB 등을 활용하여 저장  
-        return true; // 단순히 성공 여부를 반환  
-    }  
-}  
+using GraphQLServer.GraphQL.Common;
+using HotChocolate;
+using HotChocolate.Types;
+
+namespace GraphQLServer.GraphQL.Users;
+
+[ExtendObjectType(typeof(Mutation))]
+public class UserMutations
+{
+    [GraphQLName("addUser")]
+    public async Task<User> AddUser(
+        string name,
+        string desc,
+        [Service] UserRepository userRepository)
+    {
+        var user = new User
+        {
+            Name = name,
+            Desc = desc
+        };
+
+        await userRepository.CreateUserAsync(user);
+        return user;
+    }
+}
