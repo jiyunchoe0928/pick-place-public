@@ -1,0 +1,19 @@
+# docker-compose -f ./local/mongodb.yml up -d
+# docker exec -it my_mongo mongosh -u root -p
+
+version: '3.8'  
+  
+services:  
+  mongodb:  
+    image: mongo:6  
+    container_name: my_mongo  
+    restart: always  
+    ports:  
+      - "27017:27017" # 호스트의 27017 포트를 컨테이너의 27017 포트에 연결  
+    volumes:  
+      - mongo_data:/data/db # 데이터 영속화를 위한 볼륨  
+    environment:  
+      MONGO_INITDB_ROOT_USERNAME: root # 초기에 생성될 관리자 계정의 아이디  
+      MONGO_INITDB_ROOT_PASSWORD: password # 초기에 생성될 관리자 계정의 비밀번호  
+volumes:  
+  mongo_data:  
