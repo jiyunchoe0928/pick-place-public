@@ -2,6 +2,7 @@ using GraphQLServer.GraphQL.Common;
 using GraphQLServer.GraphQL.Users;
 using GraphQLServer.GraphQL.Places;
 using MongoDB.Driver;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,17 +27,42 @@ builder.Services.AddSingleton<UserRepository>(s =>
     return new UserRepository(mongoClient, mongoDbSettings.DatabaseName);
 });
 
+// Redis 연결 설정
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+{
+    string redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost";
+    return ConnectionMultiplexer.Connect(redisConnectionString);
+});
+
+
+// ExternalUrlStrings 구성 추가
+builder.Services.Configure<ExternalUrlStrings>(builder.Configuration.GetSection("ExternalUrlStrings"));
+
+
+// HttpClient 등록 (ExternalPlaceClient에서 사용)
+builder.Services.AddHttpClient<ExternalPlaceClient>();
+
+
+// PlaceService 등록
+builder.Services.AddScoped<PlaceService>(); // 또는 AddTransient, AddSingleton 상황에 따라 선택
+
 // 로깅 서비스 추가
 builder.Services.AddLogging(); 
+
+builder.Services.AddSingleton(sp =>
+{
+    var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+    return loggerFactory.CreateLogger("Global");
+});
 
 // GraphQL 서비스 등록
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
-    .AddMutationType<Mutation>()         // Mutation 추가
+    .AddMutationType<Mutation>()
     .AddTypeExtension<UserQuery>()
     .AddTypeExtension<PlaceQuery>()
-    .AddTypeExtension<UserMutations>();  // Mutation 확장 추가
+    .AddTypeExtension<UserMutations>();
 
 var app = builder.Build();
 
@@ -51,4 +77,10 @@ public class MongoDBSettings
 {
     public required string ConnectionString { get; set; }
     public required string DatabaseName { get; set; }
+}
+
+// ExternalUrlStrings 설정 클래스 추가
+public class ExternalUrlStrings
+{
+    public required string Place { get; set; }
 }

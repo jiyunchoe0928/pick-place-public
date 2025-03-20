@@ -8,7 +8,7 @@ public class UserRepository
     public UserRepository(IMongoClient mongoClient, string databaseName)
     {
         var database = mongoClient.GetDatabase(databaseName);
-        _users = database.GetCollection<User>("Users"); // 컬렉션 이름
+        _users = database.GetCollection<User>("Users");
     }
 
     public async Task<List<User>> GetUsersAsync() =>

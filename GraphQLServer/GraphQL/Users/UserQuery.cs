@@ -2,7 +2,6 @@ using GraphQLServer.GraphQL.Common;
   
 namespace GraphQLServer.GraphQL.Users;  
   
-// UserQuery 확장  
 [ExtendObjectType(typeof(Query))]  
 public class UserQuery  
 {  

@@ -3,7 +3,6 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace GraphQLServer.GraphQL.Users;  
   
-// User 엔티티 정의  
 public class User  
 {  
     [BsonId]
