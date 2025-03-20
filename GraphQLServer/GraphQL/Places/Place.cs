@@ -166,8 +166,8 @@ namespace GraphQLServer.GraphQL.Places
     // RegularOpeningHours
     public class RegularOpeningHours
     {
-        public required bool OpenNow { get; set; }
-        public required List<Period> Periods { get; set; }
+        public bool? OpenNow { get; set; }
+        public List<Period>? Periods { get; set; }
         public required List<string> WeekdayDescriptions { get; set; }
     }
 

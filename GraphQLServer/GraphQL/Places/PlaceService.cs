@@ -26,10 +26,10 @@ public class PlaceService
         string cacheKey = $"place:init";
         string? cachedPlace = await db.StringGetAsync(cacheKey);
 
-        if (!string.IsNullOrEmpty(cachedPlace))
-        {
-            return JsonSerializer.Deserialize<List<Place>>(cachedPlace);
-        }
+        // if (!string.IsNullOrEmpty(cachedPlace))
+        // {
+        //     return JsonSerializer.Deserialize<List<Place>>(cachedPlace);
+        // }
 
         List<ExternalPlaceDto>? externalPlaceDtos = await _externalPlaceClient.GetInitPlacesDataAsync();
         if (externalPlaceDtos == null || externalPlaceDtos.Count == 0)
@@ -91,9 +91,27 @@ public class PlaceService
           SearchUri = externalPlace.SearchUri ?? string.Empty,
           UpdatedTime = externalPlace.UpdatedTime ?? DateTime.UtcNow.ToString("O"),
           CurrentState = externalPlace.CurrentState ?? "Unknown",
+          Summaries = externalPlace.Summaries?.Select(externalPlaceSummary => new Summary{
+            Name = externalPlaceSummary.Name ?? string.Empty,
+            SummaryDetail = new PlaceSummary()
+            {
+              Positive = externalPlaceSummary?.SummaryDetail?.Positive ?? string.Empty,
+              Neutral = externalPlaceSummary?.SummaryDetail?.Neutral ?? string.Empty,
+              Negative = externalPlaceSummary?.SummaryDetail?.Negative ?? string.Empty,
+            }            
+          }).ToList() ?? new List<Summary>(),
           Places = externalPlace.Places?.Select(externalPlaceDetail => new PlaceDetail
           {
               Id = externalPlaceDetail.Id ?? string.Empty,
+              DisplayName = new DisplayName()
+              {
+                LanguageCode = externalPlaceDetail.DisplayName?.LanguageCode ?? string.Empty,
+                Text = externalPlaceDetail.DisplayName?.Text ?? string.Empty,
+              },
+              RegularOpeningHours = new RegularOpeningHours()
+              {
+                WeekdayDescriptions = externalPlaceDetail.RegularOpeningHours?.WeekdayDescriptions ?? new List<string>(), 
+              },
               AdrFormatAddress = externalPlaceDetail.AdrFormatAddress ?? string.Empty,
               BusinessStatus = externalPlaceDetail.BusinessStatus ?? string.Empty,
               FormattedAddress = externalPlaceDetail.FormattedAddress ?? string.Empty,

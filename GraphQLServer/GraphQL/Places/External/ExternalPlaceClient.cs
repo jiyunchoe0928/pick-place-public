@@ -28,7 +28,7 @@ public class ExternalPlaceClient
     {
         try
         {
-            var requestBody = new { message };
+            var requestBody = new { message, language = "ja" };
 
             var jsonContent = JsonContent.Create(requestBody);
             var response = await _httpClient.PostAsync("/dev/place/find", jsonContent);

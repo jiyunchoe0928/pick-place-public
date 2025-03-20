@@ -64,10 +64,23 @@ builder.Services
     .AddTypeExtension<PlaceQuery>()
     .AddTypeExtension<UserMutations>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 // GraphQL 미들웨어 등록
 app.MapGraphQL();
+
+app.UseCors(); // CORS 미들웨어 추가
 
 // 서버 실행
 app.Run();
