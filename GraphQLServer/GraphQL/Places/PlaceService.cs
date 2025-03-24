@@ -26,10 +26,10 @@ public class PlaceService
         string cacheKey = $"place:init";
         string? cachedPlace = await db.StringGetAsync(cacheKey);
 
-        // if (!string.IsNullOrEmpty(cachedPlace))
-        // {
-        //     return JsonSerializer.Deserialize<List<Place>>(cachedPlace);
-        // }
+        if (!string.IsNullOrEmpty(cachedPlace))
+        {
+            return JsonSerializer.Deserialize<List<Place>>(cachedPlace);
+        }
 
         List<ExternalPlaceDto>? externalPlaceDtos = await _externalPlaceClient.GetInitPlacesDataAsync();
         if (externalPlaceDtos == null || externalPlaceDtos.Count == 0)
